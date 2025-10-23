@@ -7,29 +7,18 @@ module.exports = {
     const adminPassword = await bcrypt.hash('admin123', 10);
     const userPassword = await bcrypt.hash('user123', 10);
 
-    await queryInterface.bulkInsert('users', [
-      {
-        id: uuidv4(),
-        name: 'Admin User',
-        email: 'admin@example.com',
-        password: adminPassword,
-        profile: 'admin',
-        createdAt: new Date(),
-        updatedAt: new Date()
-      },
-      {
-        id: uuidv4(),
-        name: 'Regular User',
-        email: 'user@example.com',
-        password: userPassword,
-        profile: 'user',
-        createdAt: new Date(),
-        updatedAt: new Date()
-      }
-    ], {});
+    return queryInterface.sequelize.query(`
+      INSERT INTO "users" ("id","name","email","password","profile","createdAt","updatedAt")
+      VALUES
+        ('${uuidv4()}', 'Admin User', 'admin@example.com', '${adminPassword}', 'admin', NOW(), NOW()),
+        ('${uuidv4()}', 'Regular User', 'user@example.com', '${userPassword}', 'user', NOW(), NOW())
+      ON CONFLICT (email) DO NOTHING;
+    `);
   },
 
   down: async (queryInterface, Sequelize) => {
-    await queryInterface.bulkDelete('users', null, {});
+    return queryInterface.bulkDelete('users', {
+      email: ['admin@example.com', 'user@example.com']
+    });
   }
 };

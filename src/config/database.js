@@ -7,7 +7,7 @@ module.exports = {
     database: process.env.DB_NAME,
     host: process.env.DB_HOST || 'localhost',
     dialect: 'postgres',
-    port: process.env.DB_PORT || 5432,
+    port: process.env.DB_PORT || 5433,
     logging: false
   },
   test: {
@@ -16,7 +16,7 @@ module.exports = {
     database: `${process.env.DB_NAME}_test`,
     host: process.env.DB_HOST || 'localhost',
     dialect: 'postgres',
-    port: process.env.DB_PORT || 5432,
+    port: process.env.DB_PORT || 5433,
     logging: false
   },
   production: {
@@ -37,7 +37,7 @@ module.exports = {
     database: process.env.DB_NAME,
     host: process.env.DB_HOST || 'localhost',
     dialect: 'postgres',
-    port: process.env.DB_PORT || 5432,
+    port: process.env.DB_PORT || 5433,
     logging: false
   },
   test: {
@@ -46,7 +46,7 @@ module.exports = {
     database: `${process.env.DB_NAME}_test`,
     host: process.env.DB_HOST || 'localhost',
     dialect: 'postgres',
-    port: process.env.DB_PORT || 5432,
+    port: process.env.DB_PORT || 5433,
     logging: false
   },
   production: {
