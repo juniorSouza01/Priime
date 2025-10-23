@@ -17,7 +17,6 @@ describe('AuthService', () => {
   let mockUser;
 
   beforeEach(() => {
-    // Resetar mocks antes de cada teste
     User.findOne.mockReset();
     AccessLog.create.mockReset();
 
@@ -25,15 +24,15 @@ describe('AuthService', () => {
       id: 'some-uuid',
       name: 'Test User',
       email: 'test@example.com',
-      password: 'hashedpassword', // A senha será verificada pelo mock do checkPassword
+      password: 'hashedpassword',
       profile: 'user',
-      checkPassword: jest.fn(), // Mock para o método checkPassword do modelo User
+      checkPassword: jest.fn(),
     };
   });
 
   it('should successfully log in a user with correct credentials', async () => {
     User.findOne.mockResolvedValue(mockUser);
-    mockUser.checkPassword.mockResolvedValue(true); // Senha correta
+    mockUser.checkPassword.mockResolvedValue(true);
 
     const { user, token } = await AuthService.login('test@example.com', 'password123', '127.0.0.1');
 
@@ -57,7 +56,7 @@ describe('AuthService', () => {
   });
 
   it('should throw an error if user is not found', async () => {
-    User.findOne.mockResolvedValue(null); // Usuário não encontrado
+    User.findOne.mockResolvedValue(null);
 
     await expect(AuthService.login('nonexistent@example.com', 'password123', '127.0.0.1'))
       .rejects.toThrow('User not found');
@@ -67,7 +66,7 @@ describe('AuthService', () => {
 
   it('should throw an error if password is invalid', async () => {
     User.findOne.mockResolvedValue(mockUser);
-    mockUser.checkPassword.mockResolvedValue(false); // Senha incorreta
+    mockUser.checkPassword.mockResolvedValue(false);
 
     await expect(AuthService.login('test@example.com', 'wrongpassword', '127.0.0.1'))
       .rejects.toThrow('Invalid password');

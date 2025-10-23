@@ -2,7 +2,7 @@ const request = require('supertest');
 const express = require('express');
 const { sequelize } = require('../../models');
 const authRoutes = require('../../routes/authRoutes');
-const userRoutes = require('../../routes/userRoutes'); // Para criar usuário de teste
+const userRoutes = require('../../routes/userRoutes');
 const authConfig = require('../../config/auth');
 const jwt = require('jsonwebtoken');
 const { v4: uuidv4 } = require('uuid');
@@ -11,17 +11,16 @@ const bcrypt = require('bcryptjs');
 const app = express();
 app.use(express.json());
 app.use('/api/auth', authRoutes);
-app.use('/api', userRoutes); // Adicionar rotas de usuário para poder criar usuários de teste
+app.use('/api', userRoutes);
 
 describe('Authentication Integration Tests', () => {
   let testUser;
   const testPassword = 'password123';
 
-  // Antes de todos os testes, conecta ao banco de dados e cria um usuário de teste
   beforeAll(async () => {
-    process.env.NODE_ENV = 'test'; // Usar a configuração de teste do Sequelize
+    process.env.NODE_ENV = 'test';
     await sequelize.authenticate();
-    await sequelize.sync({ force: true }); // Limpa e recria as tabelas
+    await sequelize.sync({ force: true });
 
     const hashedPassword = await bcrypt.hash(testPassword, 10);
     testUser = await sequelize.models.User.create({
@@ -33,7 +32,6 @@ describe('Authentication Integration Tests', () => {
     });
   });
 
-  // Depois de todos os testes, fecha a conexão com o banco de dados
   afterAll(async () => {
     await sequelize.close();
   });
@@ -49,13 +47,12 @@ describe('Authentication Integration Tests', () => {
     expect(res.statusCode).toEqual(200);
     expect(res.body).toHaveProperty('token');
     expect(res.body.user.email).toEqual(testUser.email);
-    expect(res.body.user).not.toHaveProperty('password'); // Não deve retornar a senha
+    expect(res.body.user).not.toHaveProperty('password');
 
     const decoded = jwt.verify(res.body.token, authConfig.secret);
     expect(decoded.id).toEqual(testUser.id);
     expect(decoded.profile).toEqual(testUser.profile);
 
-    // Verificar se o log de acesso foi criado
     const accessLog = await sequelize.models.AccessLog.findOne({ where: { userId: testUser.id } });
     expect(accessLog).toBeDefined();
     expect(accessLog.userId).toEqual(testUser.id);
